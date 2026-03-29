@@ -287,6 +287,163 @@ html, body {
 @keyframes loadPulse { 0%,100% { opacity:0.3; transform:scale(1); } 50% { opacity:1; transform:scale(1.5); } }
 .loading-text { font-family: var(--font-body); font-size: 0.7rem; letter-spacing: 0.2em; color: var(--gold-700); opacity: 0.5; text-transform: uppercase; }
 
+/* === POMEGRANATE TAP ZONE === */
+.pom-tap {
+  position: fixed;
+  top: 42%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100px; height: 120px;
+  z-index: var(--z-labels);
+  cursor: pointer;
+  pointer-events: auto;
+  border-radius: 50%;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* === MANIFESTO OVERLAY === */
+.manifesto-overlay {
+  position: fixed; top: 0; left: 0;
+  width: 100%; height: 100%;
+  z-index: var(--z-modal);
+  pointer-events: none; opacity: 0;
+  transition: opacity 0.5s ease;
+}
+.manifesto-overlay.active { pointer-events: auto; opacity: 1; }
+.manifesto-backdrop {
+  position: fixed; top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(250,246,240,0.65);
+  backdrop-filter: blur(20px) saturate(1.3);
+  -webkit-backdrop-filter: blur(20px) saturate(1.3);
+}
+.manifesto-scroll {
+  position: fixed; top: 0; left: 0;
+  width: 100%; height: 100%;
+  overflow-y: auto; overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+}
+.manifesto-content {
+  position: relative;
+  max-width: 420px; width: 90%;
+  margin: 6vh auto 8vh;
+  padding: 0;
+}
+.manifesto-close {
+  position: fixed; top: 16px; right: 16px;
+  z-index: calc(var(--z-modal) + 1);
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.5);
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.6);
+  font-size: 1.2rem; color: var(--warm-brown);
+  cursor: pointer; display: flex;
+  align-items: center; justify-content: center;
+  transition: all 0.3s ease;
+  opacity: 0;
+}
+.manifesto-overlay.active .manifesto-close { opacity: 1; transition-delay: 0.3s; }
+.manifesto-close:hover { background: rgba(255,255,255,0.7); }
+
+/* Manifesto hero */
+.m-hero {
+  text-align: center;
+  padding: 24px 0 32px;
+  opacity: 0;
+  transform: translateY(20px);
+}
+.manifesto-overlay.active .m-hero {
+  opacity: 1; transform: translateY(0);
+  transition: all 0.6s cubic-bezier(0.25,0.46,0.45,0.94) 0.15s;
+}
+.m-hero-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 4vw, 2.2rem);
+  font-weight: 400; color: var(--bordo-700);
+  letter-spacing: 0.12em;
+  margin-bottom: 12px;
+}
+.m-hero-sub {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: clamp(0.85rem, 2vw, 1.1rem);
+  color: var(--gold-700);
+  line-height: 1.5;
+  margin-bottom: 20px;
+}
+.m-hero-desc {
+  font-family: var(--font-body);
+  font-size: 0.82rem; font-weight: 300;
+  color: var(--warm-brown); line-height: 1.7;
+  max-width: 360px; margin: 0 auto;
+}
+
+/* Manifesto section cards */
+.m-section {
+  margin-bottom: 16px;
+  padding: 24px 22px;
+  border-radius: 18px;
+  background: linear-gradient(145deg, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.2) 100%);
+  -webkit-backdrop-filter: blur(16px) saturate(1.4);
+  backdrop-filter: blur(16px) saturate(1.4);
+  border: 1px solid rgba(255,255,255,0.45);
+  box-shadow: 0 4px 20px rgba(155,27,48,0.05), inset 0 1px 0 rgba(255,255,255,0.4);
+  opacity: 0; transform: translateY(16px);
+}
+.manifesto-overlay.active .m-section {
+  opacity: 1; transform: translateY(0);
+  transition: all 0.5s cubic-bezier(0.25,0.46,0.45,0.94);
+}
+.manifesto-overlay.active .m-section:nth-child(3) { transition-delay: 0.2s; }
+.manifesto-overlay.active .m-section:nth-child(4) { transition-delay: 0.3s; }
+.manifesto-overlay.active .m-section:nth-child(5) { transition-delay: 0.4s; }
+.manifesto-overlay.active .m-section:nth-child(6) { transition-delay: 0.5s; }
+
+.m-section-num {
+  font-family: var(--font-display);
+  font-size: 0.7rem; font-weight: 500;
+  letter-spacing: 0.15em; text-transform: uppercase;
+  color: var(--gold-700); opacity: 0.7;
+  margin-bottom: 6px;
+}
+.m-section-title {
+  font-family: var(--font-display);
+  font-size: 1.05rem; font-weight: 500;
+  color: var(--bordo-700);
+  margin-bottom: 10px;
+}
+.m-section-text {
+  font-family: var(--font-body);
+  font-size: 0.78rem; font-weight: 300;
+  color: var(--warm-brown); line-height: 1.65;
+}
+
+/* Manifesto closing */
+.m-close-section {
+  text-align: center;
+  padding: 20px 0 0;
+  opacity: 0;
+}
+.manifesto-overlay.active .m-close-section {
+  opacity: 1; transition: opacity 0.5s ease 0.6s;
+}
+.m-close-quote {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: clamp(0.9rem, 2vw, 1.1rem);
+  color: var(--bordo-700);
+  line-height: 1.5;
+  margin-bottom: 8px;
+}
+.m-close-cta {
+  font-family: var(--font-body);
+  font-size: 0.7rem; font-weight: 400;
+  letter-spacing: 0.15em;
+  color: var(--gold-700);
+  text-transform: uppercase;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
   #particle-canvas, #energy-canvas { display: none; }
@@ -340,6 +497,63 @@ html, body {
 <div class="branch-label" id="label-community" role="button" tabindex="0" data-branch="community">Community</div>
 <div class="branch-label" id="label-economy" role="button" tabindex="0" data-branch="economy">The Economy</div>
 <div class="branch-label" id="label-tech" role="button" tabindex="0" data-branch="tech">Under the Hood</div>
+
+<!-- Pomegranate tap zone -->
+<div class="pom-tap" id="pom-tap" role="button" tabindex="0" aria-label="Learn about Granat"></div>
+
+<!-- Manifesto overlay -->
+<div class="manifesto-overlay" id="manifesto-overlay">
+  <div class="manifesto-backdrop" id="manifesto-backdrop"></div>
+  <button class="manifesto-close" id="manifesto-close" aria-label="Close">&times;</button>
+  <div class="manifesto-scroll">
+    <div class="manifesto-content">
+      <div class="m-hero">
+        <div class="m-hero-title">GRANAT</div>
+        <div class="m-hero-sub">The first artifact in human history<br>created by the entire planet.</div>
+        <div class="m-hero-desc">Five continents. Five artists trusted by millions. Fans record their voices. AI weaves a billion voices into a single song. Every participant can hear themselves inside it. A precedent that has never existed.</div>
+      </div>
+
+      <div class="m-section">
+        <div class="m-section-num">How It Works</div>
+        <div class="m-section-title">From Your Voice to the Artifact</div>
+        <div class="m-section-text">
+          <strong>01.</strong> Artists on each continent record their part.<br>
+          <strong>02.</strong> You open the app, sing, and your voice is uploaded.<br>
+          <strong>03.</strong> AI corrects pitch, removes noise, blends all voices — not averaging, but conducting.<br>
+          <strong>04.</strong> The artifact is born: a song where the entire planet sings together.
+        </div>
+      </div>
+
+      <div class="m-section">
+        <div class="m-section-num">Your Voice</div>
+        <div class="m-section-title">12 Dimensions of Uniqueness</div>
+        <div class="m-section-text">Your voice isn't just a sound wave — it's a fingerprint across 12 dimensions. Pitch, resonance, tremor, timbre, breath, neural signature... No other voice on the planet can replicate yours. Unique as DNA. Private as thought.</div>
+      </div>
+
+      <div class="m-section">
+        <div class="m-section-num">The Vision</div>
+        <div class="m-section-title">The Listener Becomes the Creator</div>
+        <div class="m-section-text">This is not a streaming platform. Not a social network. The old chain — Artist → Label → Streaming → Listener — is over. In Granat, fans become co-creators. Your voice is inside the song. You're part of the artifact.</div>
+      </div>
+
+      <div class="m-section">
+        <div class="m-section-num">The Evolution</div>
+        <div class="m-section-title">From One Song to a Universe</div>
+        <div class="m-section-text">
+          <strong>The Song</strong> — a billion voices create history.<br>
+          <strong>The Movement</strong> — GranatFest on 5 continents.<br>
+          <strong>The Industry</strong> — co-creators share in the success.<br>
+          <strong>The Universe</strong> — where participation has economic value. Not a handout — a hand raised.
+        </div>
+      </div>
+
+      <div class="m-close-section">
+        <div class="m-close-quote">Not a consumer. A creator.</div>
+        <div class="m-close-cta">Let's create history together</div>
+      </div>
+    </div>
+  </div>
+</div>
 
 <!-- Branch overlay -->
 <div class="branch-overlay" id="branch-overlay">
@@ -874,6 +1088,27 @@ document.getElementById('voice-modal-backdrop').addEventListener('click', () => 
   voiceModal.classList.remove('active');
   setTimeout(() => showVoiceState('voice-ready'), 400);
 });
+
+// === MANIFESTO (pomegranate tap) ===
+const manifesto = document.getElementById('manifesto-overlay');
+document.getElementById('pom-tap').addEventListener('click', () => {
+  // Pulse pomegranate on tap
+  if (planes.pomegranate) {
+    gsap.to(planes.pomegranate.scale, { x:1.06, y:1.06, duration:0.25, ease:'power2.out',
+      onComplete: () => gsap.to(planes.pomegranate.scale, { x:1, y:1, duration:0.8, ease:'elastic.out(1,0.4)' })
+    });
+  }
+  // Flash all energy
+  BRANCH_IDS.forEach(id => state.energyIntensity[id] = 1);
+  // Open manifesto
+  setTimeout(() => manifesto.classList.add('active'), 200);
+});
+document.getElementById('pom-tap').addEventListener('keydown', e => {
+  if (e.key === 'Enter' || e.key === ' ') document.getElementById('pom-tap').click();
+});
+function closeManifesto() { manifesto.classList.remove('active'); }
+document.getElementById('manifesto-backdrop').addEventListener('click', closeManifesto);
+document.getElementById('manifesto-close').addEventListener('click', closeManifesto);
 
 // === RESIZE ===
 window.addEventListener('resize', () => {
