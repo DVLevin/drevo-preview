@@ -3,13 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>GRANAT — Drevo Tuner v5</title>
+<title>GRANAT — The Living Tree</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/lil-gui@0.19/dist/lil-gui.umd.min.js"></script>
 <style>
 :root {
   --color-bordo-700: #9B1B30;
@@ -60,6 +59,7 @@ html, body {
   pointer-events: none; opacity: 0.06; mix-blend-mode: soft-light;
 }
 
+/* === UI LAYER === */
 .ui-layer {
   position: fixed; top: 0; left: 0;
   width: 100%; height: 100%; z-index: 10;
@@ -73,11 +73,13 @@ html, body {
   font-weight: 400; letter-spacing: 0.4em;
   color: var(--color-gold-700); text-align: center;
   text-shadow: 0 1px 2px rgba(0,0,0,0.08);
+  opacity: 0;
 }
 
 .counter-area {
   position: fixed; bottom: 14vh; left: 50%;
   transform: translateX(-50%); text-align: center; z-index: 10;
+  opacity: 0;
 }
 .counter-number {
   font-family: var(--font-display);
@@ -102,27 +104,101 @@ html, body {
   text-transform: uppercase; cursor: pointer;
   pointer-events: auto; z-index: 10;
   white-space: nowrap; padding: 12px 28px;
-  border: 1px solid rgba(155,27,48,0.2); border-radius: 2px;
-  background: rgba(250,246,240,0.6); backdrop-filter: blur(4px);
+  border: 1px solid rgba(155,27,48,0.15); border-radius: 2px;
+  background: rgba(250,246,240,0.5); backdrop-filter: blur(4px);
+  opacity: 0;
+  transition: all 0.4s ease;
+}
+.cta:hover {
+  border-color: rgba(155,27,48,0.35);
+  background: rgba(250,246,240,0.75);
 }
 
+/* === LIQUID GLASS BRANCH LABELS === */
 .branch-label {
   position: fixed;
-  font-family: var(--font-display); font-style: italic;
-  font-size: clamp(0.6rem, 1.1vw, 0.8rem);
-  font-weight: 500; letter-spacing: 0.12em;
-  color: #5A400A; opacity: 0.5;
-  pointer-events: none; text-transform: uppercase;
-  z-index: 11; white-space: nowrap;
-  text-shadow: 0 0 6px rgba(250,246,240,1), 0 0 12px rgba(250,246,240,0.9), 0 0 20px rgba(250,246,240,0.6);
-  padding: 2px 6px;
+  z-index: 11;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+
+  /* Liquid glass container */
+  padding: 8px 16px;
+  border-radius: 14px;
+
+  /* Frosted glass backdrop */
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.35) 0%,
+    rgba(255, 255, 255, 0.15) 40%,
+    rgba(255, 255, 255, 0.25) 100%
+  );
+  -webkit-backdrop-filter: blur(12px) saturate(1.4);
+  backdrop-filter: blur(12px) saturate(1.4);
+
+  /* Refraction border — the "liquid" edge */
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  border-top-color: rgba(255, 255, 255, 0.6);
+  border-left-color: rgba(255, 255, 255, 0.5);
+
+  /* Depth shadow — soft and warm */
+  box-shadow:
+    0 2px 8px rgba(155, 27, 48, 0.06),
+    0 4px 16px rgba(201, 168, 76, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.03);
+
+  /* Typography */
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: clamp(0.65rem, 1.2vw, 0.85rem);
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  color: rgba(90, 64, 10, 0.85);
+  text-transform: uppercase;
+  white-space: nowrap;
 }
 
-#label-song      { top: 30%; left: 3%; }
-#label-voice     { top: 30%; right: 3%; text-align: right; }
-#label-community { top: 13%; left: 50%; transform: translateX(-50%); }
-#label-economy   { bottom: 28%; left: 3%; top: auto; }
-#label-tech      { bottom: 28%; right: 3%; top: auto; text-align: right; }
+/* Visible state */
+.branch-label.visible {
+  opacity: 0.85;
+}
+
+/* Active / hover glow */
+.branch-label.active {
+  opacity: 1;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.5) 0%,
+    rgba(212, 175, 55, 0.12) 40%,
+    rgba(255, 255, 255, 0.35) 100%
+  );
+  border-color: rgba(212, 175, 55, 0.35);
+  border-top-color: rgba(255, 255, 255, 0.7);
+  box-shadow:
+    0 2px 12px rgba(201, 168, 76, 0.15),
+    0 6px 24px rgba(155, 27, 48, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.03);
+  color: rgba(90, 64, 10, 1);
+  font-weight: 600;
+}
+
+/* Label positions */
+#label-song      { top: 30%; left: 4%; }
+#label-voice     { top: 30%; right: 4%; }
+#label-community { top: 12%; left: 50%; transform: translateX(-50%); }
+#label-economy   { bottom: 27%; left: 4%; top: auto; }
+#label-tech      { bottom: 27%; right: 4%; top: auto; }
+
+/* Entrance overlay */
+.entrance-veil {
+  position: fixed; top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: var(--color-ivory-100);
+  z-index: 100; pointer-events: none;
+}
 
 .loading {
   position: fixed; top: 50%; left: 50%;
@@ -131,85 +207,80 @@ html, body {
   color: var(--color-gold-700); opacity: 0.6; z-index: 101; text-transform: uppercase;
 }
 
-.lil-gui { z-index: 200 !important; max-height: 90vh; overflow-y: auto; }
-
-#mode-indicator {
-  position: fixed; top: 10px; left: 10px;
-  background: rgba(0,0,0,0.75); color: #0f0;
-  font-family: monospace; font-size: 11px;
-  padding: 6px 10px; border-radius: 4px;
-  z-index: 201; pointer-events: none;
-}
-
 @media (min-width: 768px) {
-  #label-song      { top: 32%; left: 12%; }
-  #label-voice     { top: 30%; right: 12%; }
-  #label-community { top: 10%; }
-  #label-economy   { top: 60%; left: 12%; }
-  #label-tech      { top: 60%; right: 12%; }
+  .branch-label {
+    padding: 10px 20px;
+    border-radius: 16px;
+    font-size: clamp(0.7rem, 1.1vw, 0.9rem);
+  }
+  #label-song      { top: 32%; left: 10%; }
+  #label-voice     { top: 30%; right: 10%; }
+  #label-community { top: 9%; }
+  #label-economy   { top: 60%; left: 10%; bottom: auto; }
+  #label-tech      { top: 60%; right: 10%; bottom: auto; }
+  .counter-area    { bottom: 16vh; }
+  .cta             { bottom: 7vh; }
 }
 </style>
 </head>
 <body>
 
+<!-- Entrance -->
+<div class="entrance-veil" id="veil"></div>
 <div class="loading" id="loading">Loading...</div>
 
-<div class="scrim-top" id="scrim-top"></div>
-<div class="scrim-bottom" id="scrim-bottom"></div>
+<!-- Scrims -->
+<div class="scrim-top"></div>
+<div class="scrim-bottom"></div>
 
-<svg class="grain" id="grain-overlay" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+<!-- Grain -->
+<svg class="grain" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
   <filter id="grain-filter"><feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch"/></filter>
   <rect width="100%" height="100%" filter="url(#grain-filter)"/>
 </svg>
 
+<!-- Canvases -->
 <canvas id="scene-canvas"></canvas>
 <canvas id="particle-canvas"></canvas>
 
+<!-- UI -->
 <div class="ui-layer">
   <div class="title" id="title">GRANAT</div>
 </div>
 <div class="counter-area" id="counter-area">
-  <div class="counter-number" id="counter">47,293</div>
+  <div class="counter-number" id="counter">0</div>
   <div class="counter-label">voices joined</div>
 </div>
 <div class="cta" id="cta">Leave Your Voice</div>
 
+<!-- Liquid Glass Branch Labels -->
 <div class="branch-label" id="label-song">The Song</div>
 <div class="branch-label" id="label-voice">Your Voice</div>
 <div class="branch-label" id="label-community">Community</div>
 <div class="branch-label" id="label-economy">The Economy</div>
 <div class="branch-label" id="label-tech">Under the Hood</div>
 
-<div id="mode-indicator">TUNER MODE — drag sliders to position elements</div>
-
 <script>
 /* =====================================================================
-   GRANAT — Drevo Tuner v5 (Unified Tree)
-   Three.js: background + unified tree + pomegranate
-   lil-gui for visual positioning
+   GRANAT — The Living Tree v5 (Production)
+   Unified tree + pomegranate + liquid glass labels
    ===================================================================== */
 
 (function() {
 'use strict';
 
-// === TUNABLE CONFIGURATION ===
-const TUNING = {
+// === CONFIGURATION (locked from tuner) ===
+const LAYOUT = {
   pomegranate: { x: 0, y: -0.04, scale: 0.42, opacity: 1, z: 3 },
-  tree: { x: 0, y: 0.02, scale: 0.85, opacity: 0.9, z: 1.5, rot: 0 },
+  tree: { x: 0, y: 0.02, scale: 0.85, opacity: 0.9, z: 1.5 },
 };
 
-// Visual toggles
-const VIS = {
-  showUI: true,
-  showScrims: true,
-  showGrain: true,
-  showParticles: true,
-  breathingEnabled: true,
-  parallaxEnabled: true,
+const CONFIG = {
+  dpr: Math.min(window.devicePixelRatio || 1, 2),
+  counterTarget: 47293,
 };
 
 // === STATE ===
-const CONFIG = { dpr: Math.min(window.devicePixelRatio || 1, 2) };
 const state = {
   mouse: { x: 0, y: 0, tx: 0, ty: 0 },
   loaded: false,
@@ -245,9 +316,8 @@ function onTextureLoad() {
   loadCount++;
   document.getElementById('loading').textContent = `Loading... ${Math.round(loadCount / totalTextures * 100)}%`;
   if (loadCount >= totalTextures) {
-    document.getElementById('loading').style.display = 'none';
     buildScene();
-    buildGUI();
+    startEntrance();
     animate();
   }
 }
@@ -267,7 +337,7 @@ loadList.forEach(({ key, file }) => {
 
 // === BUILD SCENE ===
 function buildScene() {
-  // --- Background ---
+  // Background
   if (textures.bg) {
     const bgTex = textures.bg;
     const bgAspect = bgTex.image.width / bgTex.image.height;
@@ -282,9 +352,9 @@ function buildScene() {
     planes.bg = mesh;
   }
 
-  // --- Unified Tree (branches + trunk in one image) ---
+  // Unified Tree
   if (textures.tree) {
-    const t = TUNING.tree;
+    const t = LAYOUT.tree;
     const tex = textures.tree;
     const imgAspect = tex.image.width / tex.image.height;
     const h = t.scale * 2;
@@ -295,15 +365,14 @@ function buildScene() {
     });
     const mesh = new THREE.Mesh(geo, mat);
     mesh.position.set(t.x * aspect, t.y, t.z);
-    mesh.rotation.z = t.rot * Math.PI / 180;
     mesh.userData = { parallax: 0.5, basePos: [t.x * aspect, t.y] };
     scene.add(mesh);
     planes.tree = mesh;
   }
 
-  // --- Pomegranate ---
+  // Pomegranate
   if (textures.pomegranate) {
-    const p = TUNING.pomegranate;
+    const p = LAYOUT.pomegranate;
     const tex = textures.pomegranate;
     const imgAspect = tex.image.width / tex.image.height;
     const h = p.scale * 2;
@@ -322,111 +391,73 @@ function buildScene() {
   state.loaded = true;
 }
 
-// === UPDATE (called by GUI) ===
-function updateElement(key) {
-  const mesh = planes[key];
-  if (!mesh) return;
-  const t = TUNING[key];
-  const tex = textures[key];
-  if (!tex) return;
+// === ENTRANCE ANIMATION ===
+function startEntrance() {
+  const tl = gsap.timeline();
 
-  const imgAspect = tex.image.width / tex.image.height;
-  const h = t.scale * 2;
-  const w = h * imgAspect;
-  mesh.geometry.dispose();
-  mesh.geometry = new THREE.PlaneGeometry(w, h);
-  const posX = t.x * aspect;
-  mesh.position.set(posX, t.y, t.z);
-  mesh.material.opacity = t.opacity;
-  mesh.userData.basePos = [posX, t.y];
+  // Veil fade
+  tl.to('#veil', { opacity: 0, duration: 1.5, ease: 'power2.inOut' }, 0);
+  tl.set('#veil', { display: 'none' }, 1.5);
+  tl.to('#loading', { opacity: 0, duration: 0.3 }, 0);
 
-  if (t.rot !== undefined) {
-    mesh.rotation.z = t.rot * Math.PI / 180;
-  }
+  // Title
+  tl.to('#title', { opacity: 0.85, duration: 1, ease: 'power2.out' }, 0.8);
+
+  // Liquid glass labels stagger in
+  tl.to('.branch-label', {
+    opacity: 0.85,
+    duration: 0.8,
+    stagger: 0.12,
+    ease: 'power2.out',
+    onComplete: () => {
+      document.querySelectorAll('.branch-label').forEach(el => el.classList.add('visible'));
+    }
+  }, 1.2);
+
+  // Counter
+  tl.to('#counter-area', { opacity: 1, duration: 0.8, ease: 'power2.out' }, 1.8);
+  tl.add(() => animateCounter(), 1.8);
+
+  // CTA
+  tl.to('#cta', { opacity: 0.6, duration: 1, ease: 'power2.out' }, 2.2);
+
+  // Pomegranate heartbeat
+  tl.add(() => startHeartbeat(), 1.5);
+
+  initParticles();
 }
 
-// === LIL-GUI ===
-function buildGUI() {
-  const gui = new lil.GUI({ title: 'Drevo Tuner v5', width: 280 });
+// === COUNTER ===
+const counterEl = document.getElementById('counter');
 
-  // --- Visual toggles ---
-  const visFolder = gui.addFolder('Visual Toggles');
-  visFolder.add(VIS, 'showUI').name('Show UI').onChange(v => {
-    document.querySelector('.ui-layer').style.display = v ? '' : 'none';
-    document.getElementById('counter-area').style.display = v ? '' : 'none';
-    document.getElementById('cta').style.display = v ? '' : 'none';
-    document.querySelectorAll('.branch-label').forEach(el => el.style.display = v ? '' : 'none');
-  });
-  visFolder.add(VIS, 'showScrims').name('Scrims').onChange(v => {
-    document.getElementById('scrim-top').style.display = v ? '' : 'none';
-    document.getElementById('scrim-bottom').style.display = v ? '' : 'none';
-  });
-  visFolder.add(VIS, 'showGrain').name('Grain').onChange(v => {
-    document.getElementById('grain-overlay').style.display = v ? '' : 'none';
-  });
-  visFolder.add(VIS, 'showParticles').name('Particles').onChange(v => {
-    document.getElementById('particle-canvas').style.display = v ? '' : 'none';
-  });
-  visFolder.add(VIS, 'breathingEnabled').name('Breathing');
-  visFolder.add(VIS, 'parallaxEnabled').name('Parallax');
-  visFolder.close();
-
-  // --- Unified Tree ---
-  const treeFolder = gui.addFolder('Unified Tree');
-  const tt = TUNING.tree;
-  treeFolder.add(tt, 'x', -1.5, 1.5, 0.001).name('X').onChange(() => updateElement('tree'));
-  treeFolder.add(tt, 'y', -1.5, 1.5, 0.001).name('Y').onChange(() => updateElement('tree'));
-  treeFolder.add(tt, 'rot', -180, 180, 0.5).name('Rotation').onChange(() => updateElement('tree'));
-  treeFolder.add(tt, 'scale', 0.1, 3, 0.01).name('Scale').onChange(() => updateElement('tree'));
-  treeFolder.add(tt, 'opacity', 0, 1, 0.01).name('Opacity').onChange(() => updateElement('tree'));
-  treeFolder.add(tt, 'z', 0, 10, 0.1).name('Z-Depth').onChange(() => updateElement('tree'));
-  treeFolder.open();
-
-  // --- Pomegranate ---
-  const pomFolder = gui.addFolder('Pomegranate');
-  const pt = TUNING.pomegranate;
-  pomFolder.add(pt, 'x', -1.5, 1.5, 0.001).name('X').onChange(() => updateElement('pomegranate'));
-  pomFolder.add(pt, 'y', -1.5, 1.5, 0.001).name('Y').onChange(() => updateElement('pomegranate'));
-  pomFolder.add(pt, 'scale', 0.1, 1.5, 0.01).name('Scale').onChange(() => updateElement('pomegranate'));
-  pomFolder.add(pt, 'opacity', 0, 1, 0.01).name('Opacity').onChange(() => updateElement('pomegranate'));
-  pomFolder.add(pt, 'z', 0, 10, 0.1).name('Z-Depth').onChange(() => updateElement('pomegranate'));
-  pomFolder.open();
-
-  // --- Export ---
-  const exportFolder = gui.addFolder('Export');
-  exportFolder.add({
-    copy: () => {
-      const json = JSON.stringify(TUNING, null, 2);
-      navigator.clipboard.writeText(json).then(() => {
-        document.getElementById('mode-indicator').textContent = 'CONFIG COPIED TO CLIPBOARD!';
-        setTimeout(() => {
-          document.getElementById('mode-indicator').textContent = 'TUNER MODE';
-        }, 2000);
-      }).catch(() => {
-        console.log('=== TUNED CONFIG ===\n' + json);
-        document.getElementById('mode-indicator').textContent = 'CONFIG LOGGED TO CONSOLE';
-      });
+function animateCounter() {
+  gsap.to({ v: 0 }, {
+    v: CONFIG.counterTarget,
+    duration: 3,
+    delay: 0.2,
+    ease: 'power2.out',
+    onUpdate: function() {
+      counterEl.textContent = Math.round(this.targets()[0].v).toLocaleString();
     }
-  }, 'copy').name('Copy Config JSON');
+  });
+  gsap.to(counterEl, {
+    scale: 1.04,
+    duration: 0.8,
+    ease: 'power2.inOut',
+    yoyo: true,
+    repeat: -1,
+    repeatDelay: 4,
+    delay: 4,
+  });
+}
 
-  exportFolder.add({
-    reset: () => location.reload()
-  }, 'reset').name('Reset All');
-
-  exportFolder.add({
-    production: () => {
-      const indicator = document.getElementById('mode-indicator');
-      const guiEl = document.querySelector('.lil-gui');
-      if (guiEl.style.display === 'none') {
-        guiEl.style.display = '';
-        indicator.style.display = '';
-      } else {
-        guiEl.style.display = 'none';
-        indicator.style.display = 'none';
-      }
-    }
-  }, 'production').name('Toggle Production View');
-  exportFolder.open();
+// === POMEGRANATE HEARTBEAT ===
+function startHeartbeat() {
+  if (!planes.pomegranate) return;
+  gsap.to(planes.pomegranate.scale, {
+    x: 1.015, y: 1.015,
+    duration: 2.5, ease: 'sine.inOut', yoyo: true, repeat: -1,
+  });
 }
 
 // === PARALLAX ===
@@ -489,10 +520,8 @@ function initParticles() {
     });
   }
 }
-initParticles();
 
 function updateParticles(dt) {
-  if (!VIS.showParticles) return;
   pCtx.clearRect(0, 0, window.innerWidth, window.innerHeight);
   for (const p of particles) {
     p.life += dt * p.speed * 0.1;
@@ -509,18 +538,6 @@ function updateParticles(dt) {
   }
 }
 
-// === POMEGRANATE HEARTBEAT ===
-function startHeartbeat() {
-  if (!planes.pomegranate) return;
-  gsap.to(planes.pomegranate.scale, {
-    x: 1.015, y: 1.015,
-    duration: 2.5, ease: 'sine.inOut', yoyo: true, repeat: -1,
-  });
-}
-
-// === TREE BREATHING ===
-let treeBreathPhase = 0;
-
 // === ANIMATION LOOP ===
 let lastTime = 0;
 
@@ -536,19 +553,17 @@ function animate(time = 0) {
   state.mouse.y += (state.mouse.ty - state.mouse.y) * 0.03;
 
   // Parallax
-  if (VIS.parallaxEnabled) {
-    const mx = state.mouse.x * 0.04;
-    const my = state.mouse.y * 0.04;
-    Object.values(planes).forEach(mesh => {
-      if (!mesh.userData.basePos) return;
-      const p = mesh.userData.parallax || 0;
-      mesh.position.x = mesh.userData.basePos[0] + mx * p;
-      mesh.position.y = mesh.userData.basePos[1] + my * p;
-    });
-  }
+  const mx = state.mouse.x * 0.04;
+  const my = state.mouse.y * 0.04;
+  Object.values(planes).forEach(mesh => {
+    if (!mesh.userData.basePos) return;
+    const p = mesh.userData.parallax || 0;
+    mesh.position.x = mesh.userData.basePos[0] + mx * p;
+    mesh.position.y = mesh.userData.basePos[1] + my * p;
+  });
 
-  // Tree breathing — gentle scale pulse
-  if (VIS.breathingEnabled && planes.tree) {
+  // Tree breathing
+  if (planes.tree) {
     const breathScale = 1 + Math.sin(state.time * (Math.PI * 2 / 8)) * 0.008;
     planes.tree.scale.set(breathScale, breathScale, 1);
   }
@@ -556,8 +571,6 @@ function animate(time = 0) {
   renderer.render(scene, camera);
   updateParticles(dt);
 }
-
-setTimeout(startHeartbeat, 100);
 
 // === RESIZE ===
 window.addEventListener('resize', () => {
@@ -578,7 +591,7 @@ window.addEventListener('resize', () => {
   ['pomegranate', 'tree'].forEach(key => {
     const mesh = planes[key];
     if (!mesh) return;
-    const t = TUNING[key];
+    const t = LAYOUT[key];
     const posX = t.x * newAspect;
     mesh.position.x = posX;
     mesh.userData.basePos[0] = posX;
