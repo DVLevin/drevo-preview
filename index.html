@@ -88,21 +88,22 @@ html, body {
 }
 
 .counter-area {
-  position: fixed; bottom: 15vh; left: 50%;
+  position: fixed; bottom: 12vh; left: 50%;
   transform: translateX(-50%); text-align: center;
   z-index: var(--z-ui); opacity: 0;
 }
 .counter-number {
   font-family: var(--font-display);
-  font-size: clamp(1.6rem, 3.5vw, 2.4rem);
-  font-weight: 500; color: var(--text-counter); line-height: 1;
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
+  font-weight: 600; color: var(--text-counter); line-height: 1;
+  text-shadow: 0 0 20px rgba(122,155,76,0.15);
 }
 .counter-label {
   font-family: var(--font-body);
-  font-size: clamp(0.65rem, 1.2vw, 0.8rem);
-  font-weight: 300; letter-spacing: 0.15em;
-  color: var(--warm-brown); opacity: 0.6;
-  margin-top: 4px; text-transform: uppercase;
+  font-size: clamp(0.68rem, 1.2vw, 0.82rem);
+  font-weight: 400; letter-spacing: 0.15em;
+  color: var(--warm-brown); opacity: 0.75;
+  margin-top: 5px; text-transform: uppercase;
 }
 
 .cta {
@@ -924,7 +925,9 @@ function animateCounter() {
     v: COUNTER_TARGET, duration: 2.5, ease: 'power2.out',
     onUpdate: function() { state.counterVal = Math.round(this.targets()[0].v); counterEl.textContent = state.counterVal.toLocaleString(); }
   });
-  gsap.to(counterEl, { scale: 1.04, duration: 0.8, ease: 'power2.inOut', yoyo: true, repeat: -1, repeatDelay: 5, delay: 4 });
+  // Heartbeat pulse + green glow breathe
+  gsap.to(counterEl, { scale: 1.05, duration: 0.8, ease: 'power2.inOut', yoyo: true, repeat: -1, repeatDelay: 4, delay: 3 });
+  gsap.to(counterEl, { textShadow: '0 0 28px rgba(122,155,76,0.35)', duration: 2, ease: 'sine.inOut', yoyo: true, repeat: -1, delay: 3 });
 }
 function incrementCounter() {
   state.counterVal++;
