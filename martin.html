@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Granat — Interactive Tree Prototype</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: radial-gradient(ellipse at center, #faf8f5 0%, #f2e9d8 60%, #e8dcc8 100%);
+    color: #2c2c2c;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .page {
+    max-width: 520px;
+    margin: 0 auto;
+    padding: 3rem 1.5rem 4rem;
+  }
+
+  /* Header */
+  .header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+  }
+
+  .header h1 {
+    font-size: 2rem;
+    font-weight: 300;
+    letter-spacing: 0.3em;
+    color: #2c2c2c;
+    text-transform: uppercase;
+    margin-bottom: 0.4rem;
+  }
+
+  .header .subtitle {
+    font-size: 0.8rem;
+    font-weight: 400;
+    color: #722f37;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .header .date {
+    font-size: 0.7rem;
+    color: #999;
+    letter-spacing: 0.08em;
+    margin-top: 0.8rem;
+  }
+
+  .divider {
+    width: 40px;
+    height: 2px;
+    background: linear-gradient(to right, #c9a84c, rgba(201,168,76,0.2));
+    margin: 2rem auto;
+  }
+
+  /* Liquid glass card */
+  .card {
+    position: relative;
+    background: rgba(255,255,255,0.08);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(255,255,255,0.5);
+    border-radius: 16px;
+    padding: 1.5rem;
+    margin-bottom: 1.2rem;
+    box-shadow:
+      inset 0 1px 0px rgba(255,255,255,0.75),
+      0 0 9px rgba(0,0,0,0.08),
+      0 3px 8px rgba(0,0,0,0.06);
+    overflow: hidden;
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 16px;
+    background: linear-gradient(to bottom right, rgba(255,255,255,0.5), transparent, transparent);
+    opacity: 0.7;
+    pointer-events: none;
+  }
+
+  .card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 16px;
+    background: linear-gradient(to top left, rgba(255,255,255,0.25), transparent, transparent);
+    opacity: 0.5;
+    pointer-events: none;
+  }
+
+  .card-content {
+    position: relative;
+    z-index: 1;
+  }
+
+  .card h2 {
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #c9a84c;
+    margin-bottom: 0.8rem;
+  }
+
+  .card p {
+    font-size: 0.85rem;
+    line-height: 1.65;
+    color: #3a3a3a;
+    margin-bottom: 0.5rem;
+  }
+
+  .card p:last-child {
+    margin-bottom: 0;
+  }
+
+  .card em {
+    color: #722f37;
+    font-style: normal;
+    font-weight: 500;
+  }
+
+  /* Demo link — garnet gemstone liquid glass */
+  .demo-link {
+    display: block;
+    position: relative;
+    text-align: center;
+    padding: 1.1rem 2rem;
+    margin: 1.5rem 0;
+    border-radius: 14px;
+    background: linear-gradient(145deg, #8b1a2b, #6e1525, #7a1e30);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,180,180,0.25);
+    text-decoration: none;
+    color: #fff;
+    font-size: 0.85rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    transition: all 0.3s ease;
+    box-shadow:
+      inset 0 1px 1px rgba(255,255,255,0.6),
+      inset 0 -1px 2px rgba(80,10,20,0.3),
+      0 0 12px rgba(155,27,48,0.15),
+      0 4px 12px rgba(114,47,55,0.2);
+    overflow: hidden;
+  }
+
+  .demo-link::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 14px;
+    background: linear-gradient(to bottom right, rgba(255,255,255,0.3), transparent 50%, transparent);
+    opacity: 0.7;
+    pointer-events: none;
+  }
+
+  .demo-link::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 14px;
+    background: linear-gradient(to top left, rgba(160,21,37,0.25), transparent 50%, transparent);
+    opacity: 0.6;
+    pointer-events: none;
+  }
+
+  .demo-link:hover {
+    transform: translateY(-2px);
+    background: linear-gradient(145deg, #9b2035, #7a1828, #8b2233);
+    box-shadow:
+      inset 0 1px 1px rgba(255,255,255,0.6),
+      inset 0 -1px 2px rgba(80,10,20,0.3),
+      0 0 18px rgba(155,27,48,0.2),
+      0 6px 16px rgba(114,47,55,0.25);
+  }
+
+  .demo-link .link-content {
+    position: relative;
+    z-index: 1;
+  }
+
+  .demo-link .hint {
+    display: block;
+    font-size: 0.65rem;
+    font-weight: 300;
+    color: #999;
+    margin-top: 0.25rem;
+    letter-spacing: 0.15em;
+  }
+
+  /* Tree map */
+  .tree-map {
+    text-align: center;
+    padding: 0.5rem 0;
+  }
+
+  .tree-map .root {
+    font-weight: 600;
+    font-size: 0.9rem;
+    letter-spacing: 0.15em;
+    color: #2c2c2c;
+  }
+
+  .tree-map .arrow-down {
+    color: #c9a84c;
+    font-size: 1rem;
+    margin: 0.4rem 0;
+  }
+
+  .tree-map .hint-text {
+    font-size: 0.72rem;
+    color: #999;
+    letter-spacing: 0.05em;
+  }
+
+  .branches {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.4rem;
+    margin-top: 0.3rem;
+  }
+
+  .branch {
+    padding: 0.3em 0.9em;
+    border: 1px solid rgba(201,168,76,0.35);
+    border-radius: 999px;
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #722f37;
+    background: rgba(255,255,255,0.3);
+  }
+
+  /* Feature list */
+  .features {
+    list-style: none;
+    padding: 0;
+  }
+
+  .features li {
+    padding: 0.4rem 0 0.4rem 1.2rem;
+    position: relative;
+    font-size: 0.82rem;
+    color: #3a3a3a;
+    line-height: 1.5;
+  }
+
+  .features li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.7rem;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: #c9a84c;
+  }
+
+  /* Footer */
+  .footer {
+    text-align: center;
+    margin-top: 2.5rem;
+    font-size: 0.7rem;
+    color: #aaa;
+    letter-spacing: 0.08em;
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="header">
+    <h1>Granat</h1>
+    <div class="subtitle">The Interactive Tree</div>
+    <div class="date">Design Direction — March 2026</div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="card">
+    <div class="card-content">
+      <h2>The Idea</h2>
+      <p>A <em>living 3D pomegranate tree</em> that the user explores by rotating it with a swipe. Five fruits hang on the branches — each one a pillar of the platform: <em>Song, Voice, Economy, Community, Technology.</em></p>
+      <p>The tree is both the map and the metaphor. The pomegranate — the Granat — is literal: a fruit that cracks open to reveal the richness inside.</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-content">
+      <h2>The Experience</h2>
+      <p>Fruits glow and reveal their name only when facing the camera — creating a natural sense of <em>discovery</em> as the user rotates the tree. Tap a fruit — the tree gently fades, the pomegranate stays, and the section page appears beneath it.</p>
+      <p>Two paths: <em>free exploration</em> at your own pace, or <em>"Guide me"</em> for a curated walk through every section. The <em>"Leave your voice"</em> button is always present — a direct invitation to participate.</p>
+    </div>
+  </div>
+
+  <a class="demo-link" href="https://granat-demo-v2-martin-production.up.railway.app">
+    <div class="link-content">
+      Open Prototype
+      <span class="hint">tap to experience ↗</span>
+    </div>
+  </a>
+
+  <div class="card">
+    <div class="card-content">
+      <h2>Platform Structure</h2>
+      <div class="tree-map">
+        <div class="root">GRANAT</div>
+        <div class="arrow-down">↓</div>
+        <div class="hint-text">rotate · discover · tap</div>
+        <div class="arrow-down">↓</div>
+        <div class="branches">
+          <span class="branch">Song</span>
+          <span class="branch">Voice</span>
+          <span class="branch">Economy</span>
+          <span class="branch">Community</span>
+          <span class="branch">Technology</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="card">
+    <div class="card-content">
+      <h2>Design Direction</h2>
+      <p><em>"A living digital artifact you want to join."</em> Not a website, not a pitch deck. An organic, breathing experience. Mobile-first — designed to be shown from a phone, one hand, one tap, one voice.</p>
+      <p>The aesthetic: <em>morning light through a cathedral window.</em> Warm, sacred, inviting. Light erupts from within — every element glows, pulses, lives.</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-content">
+      <h2>If Approved</h2>
+      <ul class="features">
+        <li>Fill section screens with real content</li>
+        <li>Wire the guided walkthrough</li>
+        <li>Voice recording</li>
+        <li>Song playback</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="footer">
+    Cone Red × Granat — Track A: Interactive Tree
+  </div>
+
+</div>
+</body>
+</html>
